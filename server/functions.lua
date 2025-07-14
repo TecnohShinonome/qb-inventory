@@ -867,3 +867,44 @@ function GetInventory(identifier)
 end
 
 exports('GetInventory', GetInventory)
+
+function AddHook(Type, Callback)
+    if not Type or not Callback then return end
+    if type(Callback) == 'table' and not rawget(Callback, '__cfx_functionReference') then return end
+
+    local HookType = Hooks[Type]
+    if not HookType then
+        print('AddHook: Invalid hook type', Type)
+        return
+    end
+
+    HookType[#HookType + 1] = Callback
+end
+
+exports('AddHook', AddHook)
+
+function RemoveHook(Type, HookID)
+    if not Type then return end
+    
+    local HookType = Hooks[Type]
+    if not HookType then return end
+
+    HookType[HookID] = nil
+end
+
+exports('RemoveHook', RemoveHook)
+
+function TriggerHook(Type, ...)
+    if not Type then return end
+
+    local HookType = Hooks[Type]
+    if not HookType then return end
+
+    for i = 1, #HookType do
+        -- TODO: Add further logic here, like filtering.
+        local _, Response = pcall(HookType[i], ...)
+        if Response == false then
+            return false
+        end
+    end
+end

@@ -2,6 +2,10 @@ QBCore = exports['qb-core']:GetCoreObject()
 Inventories = {}
 Drops = {}
 RegisteredShops = {}
+Hooks = {
+    ItemMoved = {},
+    ItemBought = {},
+}
 
 CreateThread(function()
     MySQL.query('SELECT * FROM inventories', {}, function(result)
@@ -508,11 +512,59 @@ RegisterNetEvent('qb-inventory:server:SetInventoryData', function(fromInventory,
         local fromId = getIdentifier(fromInventory, src)
         local toId = getIdentifier(toInventory, src)
 
+        local fromInventoryData
+        local toInventoryData
+        if fromInventory == 'player' then
+            fromInventoryData = {
+                slots = Config.MaxSlots,
+                maxweight = Config.MaxWeight,
+                items = Player.PlayerData.items,
+                type = 'player',
+            }
+        elseif Inventories[fromId] then
+            fromInventoryData = Inventories[fromId]
+        else
+            fromInventoryData = Drops[fromId]
+        end
+
+        if toInventory == 'player' then
+            toInventoryData = {
+                slots = Config.MaxSlots,
+                maxweight = Config.MaxWeight,
+                Player.PlayerData.items,
+                type = 'player',
+            }
+        elseif Inventories[toId] then
+            toInventoryData = Inventories[toId]
+        else
+            toInventoryData = Drops[toId]
+        end
+
         if toItem and fromItem.name == toItem.name then
+            if TriggerHook('ItemMoved', 'Stacked', {
+                fromInventory = fromInventoryData,
+                toInventory = toInventoryData, 
+                fromId = fromId, 
+                toId = toId, 
+                fromSlot = fromSlot, 
+                toSlot = toSlot,
+                amount = toAmount,
+            }) == false then return end
+
             if RemoveItem(fromId, fromItem.name, toAmount, fromSlot, 'stacked item') then
                 AddItem(toId, toItem.name, toAmount, toSlot, toItem.info, 'stacked item')
             end
         elseif not toItem and toAmount < fromAmount then
+            if TriggerHook('ItemMoved', 'Split', {
+                fromInventory = fromInventoryData,
+                toInventory = toInventoryData, 
+                fromId = fromId, 
+                toId = toId, 
+                fromSlot = fromSlot, 
+                toSlot = toSlot,
+                amount = toAmount,
+            }) == false then return end
+
             if RemoveItem(fromId, fromItem.name, toAmount, fromSlot, 'split item') then
                 AddItem(toId, fromItem.name, toAmount, toSlot, fromItem.info, 'split item')
             end
@@ -521,11 +573,29 @@ RegisterNetEvent('qb-inventory:server:SetInventoryData', function(fromInventory,
                 local fromItemAmount = fromItem.amount
                 local toItemAmount = toItem.amount
 
+                if TriggerHook('ItemMoved', 'Swapped', {
+                    fromInventory = fromInventoryData,
+                    toInventory = toInventoryData, 
+                    fromId = fromId, 
+                    toId = toId, 
+                    fromSlot = fromSlot, 
+                    toSlot = toSlot,
+                }) == false then return end
+
                 if RemoveItem(fromId, fromItem.name, fromItemAmount, fromSlot, 'swapped item') and RemoveItem(toId, toItem.name, toItemAmount, toSlot, 'swapped item') then
                     AddItem(toId, fromItem.name, fromItemAmount, toSlot, fromItem.info, 'swapped item')
                     AddItem(fromId, toItem.name, toItemAmount, fromSlot, toItem.info, 'swapped item')
                 end
             else
+                if TriggerHook('ItemMoved', 'Moved', {
+                    fromInventory = fromInventoryData,
+                    toInventory = toInventoryData, 
+                    fromId = fromId, 
+                    toId = toId, 
+                    fromSlot = fromSlot, 
+                    toSlot = toSlot,
+                }) == false then return end
+
                 if RemoveItem(fromId, fromItem.name, toAmount, fromSlot, 'moved item') then
                     AddItem(toId, fromItem.name, toAmount, toSlot, fromItem.info, 'moved item')
                 end
