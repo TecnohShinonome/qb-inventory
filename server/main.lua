@@ -543,10 +543,10 @@ RegisterNetEvent('qb-inventory:server:SetInventoryData', function(fromInventory,
         if toItem and fromItem.name == toItem.name then
             if TriggerHook('ItemMoved', 'Stacked', {
                 fromInventory = fromInventoryData,
-                toInventory = toInventoryData, 
-                fromId = fromId, 
-                toId = toId, 
-                fromSlot = fromSlot, 
+                toInventory = toInventoryData,
+                fromId = fromId,
+                toId = toId,
+                fromSlot = fromSlot,
                 toSlot = toSlot,
                 amount = toAmount,
             }) == false then return end
@@ -557,10 +557,10 @@ RegisterNetEvent('qb-inventory:server:SetInventoryData', function(fromInventory,
         elseif not toItem and toAmount < fromAmount then
             if TriggerHook('ItemMoved', 'Split', {
                 fromInventory = fromInventoryData,
-                toInventory = toInventoryData, 
-                fromId = fromId, 
-                toId = toId, 
-                fromSlot = fromSlot, 
+                toInventory = toInventoryData,
+                fromId = fromId,
+                toId = toId,
+                fromSlot = fromSlot,
                 toSlot = toSlot,
                 amount = toAmount,
             }) == false then return end
@@ -575,10 +575,10 @@ RegisterNetEvent('qb-inventory:server:SetInventoryData', function(fromInventory,
 
                 if TriggerHook('ItemMoved', 'Swapped', {
                     fromInventory = fromInventoryData,
-                    toInventory = toInventoryData, 
-                    fromId = fromId, 
-                    toId = toId, 
-                    fromSlot = fromSlot, 
+                    toInventory = toInventoryData,
+                    fromId = fromId,
+                    toId = toId,
+                    fromSlot = fromSlot,
                     toSlot = toSlot,
                 }) == false then return end
 
@@ -589,10 +589,10 @@ RegisterNetEvent('qb-inventory:server:SetInventoryData', function(fromInventory,
             else
                 if TriggerHook('ItemMoved', 'Moved', {
                     fromInventory = fromInventoryData,
-                    toInventory = toInventoryData, 
-                    fromId = fromId, 
-                    toId = toId, 
-                    fromSlot = fromSlot, 
+                    toInventory = toInventoryData,
+                    fromId = fromId,
+                    toId = toId,
+                    fromSlot = fromSlot,
                     toSlot = toSlot,
                 }) == false then return end
 
