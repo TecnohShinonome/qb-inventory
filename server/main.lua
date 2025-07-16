@@ -531,7 +531,7 @@ RegisterNetEvent('qb-inventory:server:SetInventoryData', function(fromInventory,
             toInventoryData = {
                 slots = Config.MaxSlots,
                 maxweight = Config.MaxWeight,
-                Player.PlayerData.items,
+                items = Player.PlayerData.items,
                 type = 'player',
             }
         elseif Inventories[toId] then
